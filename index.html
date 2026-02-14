@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For You ❤️</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  overflow:hidden;
+  color:white;
+  background:linear-gradient(-45deg,#ff9a9e,#fad0c4,#ffdde1,#ee9ca7);
+  background-size:400% 400%;
+  animation:bg 12s ease infinite;
+}
+
+@keyframes bg{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* ---------- HOME ---------- */
+
+#home{
+  position:relative;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+/* Sticker Styling */
+#stickerImg {
+  width: 150px;
+  height: auto;
+  margin-bottom: 15px; 
+  transition: transform 0.2s ease-out; 
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+.name{
+  color:#ff4d6d;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+h1{
+  margin:0;
+  padding: 0 20px;
+  font-size:32px;
+  animation:pulse 2s infinite;
+  line-height: 1.5;
+}
+
+.sub{
+  margin-top:18px;
+  font-size:18px;
+  display: none;
+}
+
+
+/* buttons */
+
+.btn{
+  position:absolute;
+  padding:16px 28px;
+  font-size:19px;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s, background-color 0.2s;
+  z-index: 10;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+#yes{
+  background:#ff4d6d;
+  color:white;
+  left:calc(50% - 140px);
+  top:calc(50% + 140px);   
+}
+
+#no{
+  background:white;
+  color:#333;
+  left:calc(50% + 20px);
+  top:calc(50% + 140px);   
+}
+
+
+/* ---------- YES SCREEN ---------- */
+
+#yesScreen{
+  display:none;
+  height:100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align:center;
+  background:linear-gradient(180deg,#ff4d6d,#c9184a);
+}
+
+#valentineImg{
+  width:280px;
+  height: 350px; 
+  object-fit: cover; 
+  border-radius:20px;
+  margin-top:20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  border: 4px solid white;
+  background-color: #ffdde1; 
+}
+
+#msg{
+  font-size:22px;
+  margin:26px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* hearts */
+
+.heart{
+  position:absolute;
+  bottom:-20px;
+  font-size:22px;
+  animation:up 7s linear infinite;
+  z-index: 1;
+}
+
+@keyframes up{
+  to{transform:translateY(-110vh);opacity:0;}
+}
+
+@keyframes pulse{
+  50%{transform:scale(1.05);}
+}
+</style>
+</head>
+
+<body>
+
+<div id="home">
+  <img id="stickerImg" src="stickers/1.webp" alt="Cute Sticker">
+  
+  <h1><span class="name">Rishabh Mishra</span>, Will you be my Valentine? ❤️🤍</h1>
+  <div class="sub">Choose wisely 😌</div>
+
+  <button id="yes" class="btn">Yes 💖🤍</button>
+  <button id="no"  class="btn">No 😏</button>
+</div>
+
+<div id="yesScreen">
+  <img id="valentineImg" src="" alt="Us">
+  <div id="msg"></div>
+</div>
+
+<audio id="music" src="song.mp3" loop></audio>
+
+<script>
+const yes = document.getElementById("yes");
+const no  = document.getElementById("no");
+const home = document.getElementById("home");
+const yesScreen = document.getElementById("yesScreen");
+const music = document.getElementById("music");
+const imgElement = document.getElementById("valentineImg");
+const stickerImg = document.getElementById("stickerImg");
+
+// --- CONFIG ---
+
+// 1. UPDATED IMAGE NAMES (from .jpg to .jpeg)
+const images = [
+  "image/1.jpeg", 
+  "image/2.jpeg"
+];
+
+// 2. STICKER NAMES
+const sticker1 = "stickers/1.webp";
+const sticker2 = "stickers/2.webp";
+
+// --- PRELOADING (Fixes Lag) ---
+
+// This forces the browser to download ALL images immediately
+const preloadImages = [...images, sticker1, sticker2];
+preloadImages.forEach(src => {
+    const img = new Image();
+    img.src = src;
+});
+
+let currentImgIndex = 0;
+
+/* --- STICKER LOGIC --- */
+
+function setStickerState(isHovering) {
+  if (isHovering) {
+    stickerImg.src = sticker2;
+    stickerImg.style.transform = "scale(1.1) rotate(5deg)"; 
+  } else {
+    stickerImg.src = sticker1;
+    stickerImg.style.transform = "scale(1) rotate(0deg)";
+  }
+}
+
+// Mouse events
+no.addEventListener("mouseenter", () => setStickerState(true));
+no.addEventListener("mouseleave", () => setStickerState(false));
+
+// Touch events (for mobile)
+no.addEventListener("touchstart", () => setStickerState(true));
+no.addEventListener("touchend",   () => setStickerState(false));
+
+
+/* --- HEARTS ANIMATION --- */
+
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤️";
+  h.style.left=Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),8000);
+},500);
+
+/* --- SAFE MOVE LOGIC --- */
+
+function moveNo(){
+  const yesR = yes.getBoundingClientRect();
+  const w = no.offsetWidth;
+  const h = no.offsetHeight;
+
+  let x,y,overlap;
+
+  do{
+    x = Math.random()*(window.innerWidth - w);
+    y = Math.random()*(window.innerHeight - h);
+
+    overlap =
+      x < yesR.right &&
+      x+w > yesR.left &&
+      y < yesR.bottom &&
+      y+h > yesR.top;
+
+  } while(overlap);
+
+  no.style.left = x+"px";
+  no.style.top  = y+"px";
+}
+
+no.addEventListener("mouseenter", moveNo);
+no.addEventListener("touchstart", e=>{
+  e.preventDefault();
+  moveNo();
+});
+
+/* --- YES CLICK LOGIC --- */
+
+yes.onclick = ()=>{
+  home.style.display="none";
+  yesScreen.style.display="flex"; 
+  music.play();
+  
+  // Set first image
+  imgElement.src = images[0];
+
+  // Start slideshow
+  startSlideshow();
+  
+  // Start typing
+  type();
+};
+
+/* Slideshow Function */
+function startSlideshow() {
+  setInterval(() => {
+    currentImgIndex++;
+    if(currentImgIndex >= images.length) {
+      currentImgIndex = 0;
+    }
+    imgElement.src = images[currentImgIndex];
+  }, 2500); 
+}
+
+/* Typing effect */
+const text = `I love you RISHABH Mishra ❤️🤍❤️
+You are stuck with me now! 😏 Happy Valentine's Day! 
+you are my precious person 
+just keep smiling Handsome🤍❤️🤍 `;
+
+function type(){
+  let i=0;
+  const el=document.getElementById("msg");
+  const t=setInterval(()=>{
+    const ch = text[i++];
+    el.innerHTML += (ch === "\n") ? "<br>" : ch;
+    if(i>=text.length) clearInterval(t);
+  },60);
+}
+</script>
+
+</body>
+</html>
